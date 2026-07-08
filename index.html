@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Strategy Radar — 1 &amp; 3 Year Outlook</title>
+<!--
+  ============================================================
+  SECURITY STRATEGY RADAR · monthly-updated strategic paper
+  Version: 1.0.1 (baseline, revised after fact-check) · Published: 2026-07-08
+  UPDATE PROCEDURE (monthly):
+   1. Refresh sections: #delta (replace items), #kpi (tiles),
+      #threats, #vulns, #regulation, #tech (edit in place)
+   2. Grade predictions in #scorecard (OPEN → HIT/PARTIAL/MISS)
+   3. #outlook-3y is revised QUARTERLY only (Jan/Apr/Jul/Oct)
+   4. Add a #changelog entry, bump version + dates in header
+  ============================================================
+-->
+<style>
+  :root {
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --ink-1: #0b0b0b;
+    --ink-2: #52514e;
+    --ink-3: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6;
+    --series-1-wash: rgba(42,120,214,0.10);
+    --seq-250: #86b6ef;
+    --status-good: #0ca30c;
+    --status-warn: #fab219;
+    --status-serious: #ec835a;
+    --status-critical: #d03b3b;
+    --good-text: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --ink-1: #ffffff;
+      --ink-2: #c3c2b7;
+      --ink-3: #898781;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --series-1-wash: rgba(57,135,229,0.14);
+      --seq-250: #184f95;
+      --good-text: #0ca30c;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page); color: var(--ink-1);
+    line-height: 1.55; font-size: 15px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px 80px; }
+  a { color: var(--series-1); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ---------- header ---------- */
+  header.masthead { padding: 40px 0 18px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+  h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.01em; margin: 6px 0 4px; }
+  .meta-line { color: var(--ink-2); font-size: 14px; }
+  .meta-line .dot { color: var(--ink-3); margin: 0 7px; }
+  .vbadge { display: inline-block; background: var(--series-1); color: #fff; font-size: 12px; font-weight: 600; border-radius: 20px; padding: 1px 10px; vertical-align: 2px; margin-left: 8px; }
+
+  /* ---------- nav ---------- */
+  nav.toc { position: sticky; top: 0; z-index: 50; background: var(--page); border-bottom: 1px solid var(--grid); margin: 14px -20px 0; padding: 10px 20px; overflow-x: auto; white-space: nowrap; }
+  nav.toc a { color: var(--ink-2); font-size: 13px; font-weight: 500; margin-right: 18px; }
+  nav.toc a:hover { color: var(--ink-1); text-decoration: none; }
+
+  /* ---------- sections & cards ---------- */
+  section { margin-top: 46px; scroll-margin-top: 60px; }
+  h2 { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; }
+  h2 .sec-num { color: var(--ink-3); font-weight: 600; margin-right: 8px; }
+  .sec-sub { color: var(--ink-2); font-size: 14px; margin: 4px 0 18px; max-width: 760px; }
+  h3 { font-size: 15px; font-weight: 650; margin-bottom: 8px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 760px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+  p + p { margin-top: 8px; }
+  .muted { color: var(--ink-3); font-size: 12.5px; }
+  .small { font-size: 13.5px; color: var(--ink-2); }
+
+  /* ---------- alert banner ---------- */
+  .alert { display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--status-critical); background: var(--surface-1); border-left: 4px solid var(--status-critical); border-radius: 10px; padding: 14px 18px; margin-top: 22px; }
+  .alert .icon { font-size: 16px; line-height: 1.4; }
+  .alert strong { font-weight: 650; }
+
+  /* ---------- delta list ---------- */
+  .delta-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--grid); }
+  .delta-item:last-child { border-bottom: none; }
+  .delta-tag { flex: 0 0 92px; font-size: 11px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); padding-top: 3px; }
+  .delta-body { font-size: 14px; color: var(--ink-2); }
+  .delta-body strong { color: var(--ink-1); font-weight: 600; }
+
+  /* ---------- KPI tiles ---------- */
+  .kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 8px; }
+  @media (max-width: 980px) { .kpi-row { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 620px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 14px 15px; }
+  .tile .t-label { font-size: 12px; color: var(--ink-2); min-height: 32px; }
+  .tile .t-value { font-size: 27px; font-weight: 650; letter-spacing: -0.01em; margin-top: 2px; }
+  .tile .t-note { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+
+  /* ---------- bar chart (div-based) ---------- */
+  .chart { margin-top: 10px; }
+  .chart-title { font-size: 14px; font-weight: 650; }
+  .chart-sub { font-size: 12.5px; color: var(--ink-3); margin-bottom: 12px; }
+  .brow { display: grid; grid-template-columns: 150px 1fr 52px; align-items: center; gap: 10px; padding: 5px 0; position: relative; }
+  .brow .blabel { font-size: 13px; color: var(--ink-2); text-align: right; }
+  .brow .btrack { position: relative; height: 20px; }
+  .brow .bfill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--series-1); border-radius: 0 4px 4px 0; min-width: 3px; }
+  .brow .bval { font-size: 13px; font-weight: 600; color: var(--ink-1); font-variant-numeric: tabular-nums; }
+  .brow:hover .bfill, .brow:focus-visible .bfill { opacity: 0.85; }
+  .brow:hover::after, .brow:focus-visible::after {
+    content: attr(data-tip); position: absolute; left: 160px; top: -30px;
+    background: var(--ink-1); color: var(--page); font-size: 12px; padding: 4px 10px;
+    border-radius: 6px; white-space: nowrap; z-index: 10; pointer-events: none;
+  }
+  .baseline { border-left: 1px solid var(--axis); }
+
+  /* ---------- column mini-chart ---------- */
+  .cols { display: flex; align-items: flex-end; gap: 18px; height: 130px; margin-top: 14px; padding-left: 4px; }
+  .col-g { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 0 0 56px; height: 100%; justify-content: flex-end; position: relative; }
+  .col-bar { width: 24px; background: var(--series-1); border-radius: 4px 4px 0 0; }
+  .col-v { font-size: 12.5px; font-weight: 600; }
+  .col-x { font-size: 12px; color: var(--ink-3); }
+  .cols-axis { border-bottom: 1px solid var(--axis); }
+  .col-g:hover::after {
+    content: attr(data-tip); position: absolute; top: -26px; left: 50%; transform: translateX(-50%);
+    background: var(--ink-1); color: var(--page); font-size: 12px; padding: 3px 9px;
+    border-radius: 6px; white-space: nowrap; z-index: 10; pointer-events: none;
+  }
+
+  /* ---------- actor / theme cards ---------- */
+  .actor-flag { font-size: 12px; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); }
+  .card h3 .chip { margin-left: 6px; }
+
+  /* ---------- tables ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  th { text-align: left; font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--axis); }
+  td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(--grid); vertical-align: top; color: var(--ink-2); }
+  td:first-child { color: var(--ink-1); font-weight: 600; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+
+  /* ---------- timeline ---------- */
+  .tl { margin-top: 12px; }
+  .tl-year { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: var(--ink-3); margin: 20px 0 6px; }
+  .tl-item { display: flex; gap: 14px; padding: 7px 0 7px 2px; border-left: 2px solid var(--grid); padding-left: 16px; position: relative; }
+  .tl-item::before { content: ""; position: absolute; left: -5px; top: 14px; width: 8px; height: 8px; border-radius: 50%; background: var(--axis); border: 2px solid var(--surface-1); }
+  .tl-item.past::before { background: var(--ink-3); }
+  .tl-item.urgent::before { background: var(--status-critical); }
+  .tl-item.next::before { background: var(--series-1); }
+  .tl-date { flex: 0 0 86px; font-size: 12.5px; font-weight: 650; font-variant-numeric: tabular-nums; color: var(--ink-2); padding-top: 1px; }
+  .tl-body { font-size: 13.5px; color: var(--ink-2); }
+  .tl-body strong { color: var(--ink-1); font-weight: 600; }
+
+  /* ---------- chips & badges ---------- */
+  .chip { display: inline-block; font-size: 11px; font-weight: 650; letter-spacing: 0.04em; border: 1px solid var(--axis); color: var(--ink-2); border-radius: 20px; padding: 1px 9px; vertical-align: 1px; }
+  .chip.conf-h { border-color: var(--ink-2); color: var(--ink-1); }
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 650; border-radius: 20px; padding: 2px 10px; }
+  .badge.crit { background: var(--status-critical); color: #fff; }
+  .badge.warn { background: var(--status-warn); color: #3a2a00; }
+  .badge.good { background: var(--status-good); color: #fff; }
+  .badge.open { border: 1px solid var(--axis); color: var(--ink-2); }
+
+  /* ---------- predictions ---------- */
+  .pred { display: flex; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--grid); }
+  .pred:last-child { border-bottom: none; }
+  .pred-id { flex: 0 0 34px; font-weight: 700; color: var(--ink-3); font-size: 13px; padding-top: 2px; }
+  .pred-body { flex: 1; }
+  .pred-body .p-claim { font-weight: 600; color: var(--ink-1); font-size: 14px; }
+  .pred-body .p-why { font-size: 13px; color: var(--ink-2); margin-top: 3px; }
+  .pred-conf { flex: 0 0 110px; text-align: right; }
+
+  /* ---------- actions ---------- */
+  .act { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--grid); font-size: 14px; }
+  .act:last-child { border-bottom: none; }
+  .act .a-pri { flex: 0 0 78px; }
+  .act .a-body { color: var(--ink-2); }
+  .act .a-body strong { color: var(--ink-1); font-weight: 600; }
+
+  /* ---------- changelog / sources ---------- */
+  .clog { font-size: 13.5px; color: var(--ink-2); }
+  .clog strong { color: var(--ink-1); }
+  .src-group { margin-top: 12px; }
+  .src-group h4 { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 4px; }
+  .src-group p { font-size: 13px; color: var(--ink-2); }
+  footer { margin-top: 60px; padding-top: 16px; border-top: 1px solid var(--grid); font-size: 12.5px; color: var(--ink-3); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">Strategic briefing · Cybersecurity landscape · EU/Germany focus</div>
+  <h1>Security Strategy Radar<span class="vbadge">v1.0.1</span></h1>
+  <div class="meta-line">1-year &amp; 3-year cybersecurity outlook, updated monthly<span class="dot">·</span>Published 8 July 2026<span class="dot">·</span>Next update: early August 2026<span class="dot">·</span>3-year section revised quarterly</div>
+</header>
+
+<nav class="toc">
+  <a href="#delta">What changed</a>
+  <a href="#kpi">Key figures</a>
+  <a href="#threats">Threat landscape</a>
+  <a href="#vulns">Vulnerabilities</a>
+  <a href="#regulation">Regulation</a>
+  <a href="#tech">Technology shifts</a>
+  <a href="#outlook-1y">1-year outlook</a>
+  <a href="#outlook-3y">3-year outlook</a>
+  <a href="#scorecard">Scorecard</a>
+  <a href="#changelog">Changelog</a>
+</nav>
+
+<!-- ================= SECTION 1: DELTA ================= -->
+<section id="delta">
+  <h2><span class="sec-num">1</span>What changed this month</h2>
+  <p class="sec-sub">Baseline edition — this section covers the most consequential developments of the past ~6 weeks. From v1.1 onward it lists only the delta since the previous edition.</p>
+  <div class="card">
+    <div class="delta-item"><div class="delta-tag">Regulation</div><div class="delta-body"><strong>AI Act omnibus adopted</strong> (Council final green light, 29 June). High-risk Annex III obligations postponed to <strong>2 Dec 2027</strong>, Annex I to Aug 2028. Art. 50 transparency obligations apply from <strong>2 Aug 2026</strong> as planned.</div></div>
+    <div class="delta-item"><div class="delta-tag">Vulns</div><div class="delta-body"><strong>“CitrixBleed 3” (CVE-2026-8451)</strong> — pre-auth NetScaler memory overread disclosed 30 June; exploitation attempts observed by two distinct actors within ~24–48h of disclosure. Patch + session/credential rotation, not patch alone.</div></div>
+    <div class="delta-item"><div class="delta-tag">Threats</div><div class="delta-body"><strong>Germany is now Europe’s #1 ransomware target</strong> — 370 incidents (17.9% of Europe) in early 2026, ahead of the UK and France; European incidents +55% y/y; manufacturing hardest hit (Black Kite Europe report, 25 June).</div></div>
+    <div class="delta-item"><div class="delta-tag">Threats</div><div class="delta-body"><strong>Novo Nordisk breach</strong> (June) — ~1.3 TB claimed stolen incl. clinical-trial data; $25M demand rejected. A prominent EU pharmaceutical case of encryption-less extortion. Data volume is attacker-claimed; attribution still conflicting between trackers.</div></div>
+    <div class="delta-item"><div class="delta-tag">Defense</div><div class="delta-body"><strong>CISA BOD 26-04</strong> (10 June) retires flat KEV patch timelines for US federal agencies in favor of risk-based deadlines — as short as <strong>3 days</strong> for internet-facing, actively exploited, automatable flaws. A useful template for internal patch SLAs.</div></div>
+    <div class="delta-item"><div class="delta-tag">Tech</div><div class="delta-body"><strong>US Executive Order 14409</strong> (22 June) sets hard federal PQC migration deadlines (high-value assets encrypted PQC by end-2030) — aligning the US with the BSI/EU 2030–2031 timeline and accelerating vendor support.</div></div>
+    <div class="delta-item"><div class="delta-tag">Threats</div><div class="delta-body"><strong>Scattered Spider members pleaded guilty</strong> (June, UK/US) over the £39M TfL attack — enforcement progress, but the help-desk social-engineering method remains in broad criminal use (ShinyHunters’ H1 2026 campaigns rely on the same approach).</div></div>
+    <div class="delta-item"><div class="delta-tag">Regulation</div><div class="delta-body"><strong>T−65 days: CRA reporting</strong> — from <strong>11 Sept 2026</strong>, product manufacturers must report actively exploited vulnerabilities and severe incidents (24h/72h) via ENISA. Applies to products already on the market.</div></div>
+  </div>
+</section>
+
+<!-- ================= SECTION 2: KPI ================= -->
+<section id="kpi">
+  <h2><span class="sec-num">2</span>Key figures</h2>
+  <p class="sec-sub">The numbers that frame the current landscape. Refreshed monthly as new report data lands.</p>
+  <div class="kpi-row">
+    <div class="tile"><div class="t-label">Ransomware incidents, Germany (early 2026)</div><div class="t-value">370</div><div class="t-note">#1 in Europe · Black Kite</div></div>
+    <div class="tile"><div class="t-label">Average eCrime breakout time</div><div class="t-value">29 min</div><div class="t-note">fastest: 27 s · CrowdStrike</div></div>
+    <div class="tile"><div class="t-label">Mean time-to-exploit vs. patch release</div><div class="t-value">−7 days</div><div class="t-note">exploitation precedes patch · M-Trends</div></div>
+    <div class="tile"><div class="t-label">Ransom payment rate 2025</div><div class="t-value">28%</div><div class="t-note">record low · Chainalysis</div></div>
+    <div class="tile"><div class="t-label">Detections that are malware-free</div><div class="t-value">82%</div><div class="t-note">identity &amp; hands-on · CrowdStrike</div></div>
+    <div class="tile"><div class="t-label">Zero-days exploited in the wild, 2025</div><div class="t-value">90</div><div class="t-note">48% in enterprise tech · GTIG</div></div>
+  </div>
+</section>
+
+<!-- ================= SECTION 3: THREAT LANDSCAPE ================= -->
+<section id="threats">
+  <h2><span class="sec-num">3</span>Threat landscape</h2>
+  <p class="sec-sub">Who is attacking, how they get in, and what changed structurally. German/EU lens throughout.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Ransomware: consolidation, data extortion, and increased targeting of Germany</h3>
+      <p class="small">The ecosystem is re-concentrating: active groups fell from 85 to 71 over two quarters and the top 10 now account for 71% of victims. Volume remains near record highs (Q1 2026: 2,122 listed victims, second-highest Q1 ever). The underlying economics are shifting — payment rate hit a record-low ~28% and total payments declined slightly (~$820M, −8% vs. 2024) despite ~50% more attacks, pushing groups toward fewer, bigger targets (median payment jumped to ~$60k) and toward pure data-theft extortion without encryption. Backups and hypervisors are now deliberately targeted to deny recovery.</p>
+      <p class="small">For Germany specifically: BSI counted 950 ransomware cases (~80% SMEs) in its 2025 reporting period, and Bitkom puts total cyber damage to the German economy at a record ~€202bn. SafePay directed more than half its European activity at German organizations.</p>
+      <div class="chart">
+        <div class="chart-title">Most active ransomware groups — Q1 2026</div>
+        <div class="chart-sub">Victims posted to leak sites · Check Point Research, May 2026</div>
+        <div class="baseline">
+          <div class="brow" tabindex="0" data-tip="Qilin: 338 victims — #1 for 3rd straight quarter"><div class="blabel">Qilin</div><div class="btrack"><div class="bfill" style="width:100%"></div></div><div class="bval">338</div></div>
+          <div class="brow" tabindex="0" data-tip="The Gentlemen: 166 victims — +315% q/q, 2026's breakout group"><div class="blabel">The Gentlemen</div><div class="btrack"><div class="bfill" style="width:49%"></div></div><div class="bval">166</div></div>
+          <div class="brow" tabindex="0" data-tip="LockBit 5.0: 163 victims — +106% q/q comeback after 2024 takedown"><div class="blabel">LockBit 5.0</div><div class="btrack"><div class="bfill" style="width:48%"></div></div><div class="bval">163</div></div>
+          <div class="brow" tabindex="0" data-tip="Play: 121 victims — +64% q/q"><div class="blabel">Play</div><div class="btrack"><div class="bfill" style="width:36%"></div></div><div class="bval">121</div></div>
+        </div>
+        <p class="muted" style="margin-top:8px">Akira also remains top-4 by most counts: $244M cumulative proceeds per CISA/FBI, heavy SonicWall/VPN exploitation, and the #1 variant in the EU (ENISA). LockBit’s German victims in Q2 2026 include Bardehle Pagenberg and Probat.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Initial access: exploitation leads; voice-based social engineering rising</h3>
+      <p class="small"><strong>Vulnerability exploitation is now the #1 initial access vector in both major datasets</strong> — Mandiant M-Trends (32% of intrusions, 6th straight year) and, for the first time in 19 years, Verizon DBIR, where it overtook credential abuse. The exploited surface is overwhelmingly the network edge: VPNs, firewalls, gateways, MFT servers and hypervisors.</p>
+      <p class="small"><strong>Vishing is the fastest-rising vector</strong> (11% of intrusions, now #2 in M-Trends). Help-desk impersonation — the Scattered Spider / ShinyHunters playbook — drove the largest breaches of the period. Fake-CAPTCHA “ClickFix” lures grew +563%. Email phishing is declining in relative terms; voice and SMS now outperform it.</p>
+      <p class="small"><strong>The attack chain has industrialized.</strong> Median time from initial compromise to hand-off to a second criminal team collapsed from 8+ hours (2022) to <strong>22 seconds</strong>. Initial-access prices fell ~70% (to ~$439). 82% of detections involve no malware at all — stolen sessions, legitimate tools, hands-on-keyboard. Infostealer-leaked credentials precede ransomware by a median of 95 days, and third-party involvement in breaches grew +60% to nearly half.</p>
+      <p class="small"><strong>SaaS/OAuth integrations became a primary vector</strong> — the Salesloft Drift token theft cascaded into ~700 Salesforce customers (Cloudflare, Palo Alto, Zscaler among them) and set the template ShinyHunters ran throughout H1 2026 (Instructure/Canvas ~275M records, One Medical 8.8 TB, MSG, Charter, Match Group via AppsFlyer — data volumes partly attacker-claimed).</p>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:14px">
+    <div class="card">
+      <h3>State-aligned activity</h3>
+      <table>
+        <tr><th style="width:92px">Nexus</th><th>What changed 2025→26</th></tr>
+        <tr><td>China</td><td>Intrusions +38% y/y; cloud intrusions +266%; logistics targeting +85%. Salt Typhoon confirmed in 200+ US companies, with victims across ~80 countries incl. EU telecoms. Volt-Typhoon-style OT pre-positioning is a standing assumption, tied to Taiwan-conflict preparation. Ran the first documented AI-orchestrated espionage campaign (GTG-1002).</td></tr>
+        <tr><td>Russia</td><td>Sandworm wipers against Ukrainian energy; sustained access operations against Western critical infrastructure via edge devices. ~80% of EU incident volume is ideology-driven hacktivism (mostly low-impact DDoS); NoName057(16) disrupted by Europol but successors gamify attacks with crypto rewards. AI-enabled malware (PROMPTSTEAL/APT28) observed in the wild.</td></tr>
+        <tr><td>Iran</td><td>The Feb–Mar 2026 Iran war carried the heaviest wartime cyber component seen against the US; destructive attacks (Handala) and elevated retaliatory risk to Western orgs persist through 2026.</td></tr>
+        <tr><td>DPRK</td><td>$643M in crypto stolen in H1 2026 (~⅔ of the global total). IT-worker infiltration scheme doubled tempo and is expanding into Europe — a hiring-pipeline problem, not just a network one (122-day median insider dwell time).</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>AI-enabled attacks: documented operational use</h3>
+      <p class="small">The period produced the first well-documented cases of AI as an operational attack capability. The overall assessment: <em>incremental and accelerating</em> — not yet transformative:</p>
+      <table>
+        <tr><th style="width:130px">Case</th><th>Significance</th></tr>
+        <tr><td>GTG-1002 <span class="muted">(Nov 2025)</span></td><td>First reported AI-orchestrated espionage campaign — Chinese state actor drove ~30 intrusions through an agentic coding tool with few human decision points (autonomy % is vendor-reported and contested).</td></tr>
+        <tr><td>EchoLeak <span class="muted">(Jun 2025)</span></td><td>First zero-click prompt-injection exfiltration in a production enterprise copilot (CVE-2025-32711, M365 Copilot). Prompt injection remains unsolved — mitigations, not fixes.</td></tr>
+        <tr><td>AI-written malware</td><td>PROMPTFLUX, PROMPTSTEAL (APT28), PROMPTSPY in active operations; criminals used AI to find and weaponize a 2FA-bypass zero-day (GTIG).</td></tr>
+        <tr><td>Deepfake fraud</td><td>Voice-clone CEO fraud is operational (multi-million Swiss case, Jan 2026); AI-industrialized access brokering is credited with collapsing initial-access prices.</td></tr>
+      </table>
+      <p class="muted" style="margin-top:8px">Assessment: attacker AI adoption currently compresses time and cost rather than creating new attack classes — the defensive implication is response speed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SECTION 4: VULNERABILITIES ================= -->
+<section id="vulns">
+  <h2><span class="sec-num">4</span>Vulnerability &amp; exploitation trends</h2>
+  <p class="sec-sub">What is actually being exploited — and why patch-cycle SLAs alone no longer work.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Exploitation now outpaces remediation</h3>
+      <p class="small">CVE volume keeps setting records (BSI: 119 new vulnerabilities/day, +24% y/y; NIST enriched 42,000 CVEs in 2025) while exploitation gets faster: <strong>~29% of newly exploited CVEs are exploited on or before disclosure day</strong>, and Mandiant's mean time-to-exploit is now <strong>−7 days</strong> — before a patch exists. Meanwhile the median enterprise takes 43 days to patch a KEV. Only ~1% of CVEs are ever weaponized — prioritization by exploitation evidence (KEV/EPSS) is the only sustainable model, which CISA has now codified (BOD 26-04).</p>
+      <div class="chart">
+        <div class="chart-title">Zero-days exploited in the wild</div>
+        <div class="chart-sub">Google Threat Intelligence Group annual counts</div>
+        <div class="cols cols-axis">
+          <div class="col-g" data-tip="2023: ~100 zero-days"><div class="col-v">100</div><div class="col-bar" style="height:78px"></div><div class="col-x">2023</div></div>
+          <div class="col-g" data-tip="2024: 78 zero-days"><div class="col-v">78</div><div class="col-bar" style="height:61px"></div><div class="col-x">2024</div></div>
+          <div class="col-g" data-tip="2025: 90 zero-days — 48% in enterprise tech"><div class="col-v">90</div><div class="col-bar" style="height:70px"></div><div class="col-x">2025</div></div>
+        </div>
+        <p class="muted" style="margin-top:8px">2025 structure: enterprise tech at an all-time-high 48% share (~21 of 90 hit security/networking appliances); commercial spyware vendors out-consumed state groups for the first time; financially motivated actors burned 9 zero-days (Cl0p, RomCom). CISA KEV additions rose 32% to 245.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Perimeter infrastructure is the primary target</h3>
+      <p class="small">Every major dataset (GTIG, M-Trends, VulnCheck, BSI) independently converges on the same exploited surface: perimeter appliances. BSI notes 47% of reachable German IPs expose sensitive information. The defining incidents of the last 12 months:</p>
+      <table>
+        <tr><th>What</th><th>Why it matters</th></tr>
+        <tr><td>SharePoint “ToolShell”<br><span class="muted">CVE-2025-53770 · Jul 25</span></td><td>Unauthenticated RCE, mass exploitation by Chinese state actors then ransomware; hundreds of orgs incl. governments.</td></tr>
+        <tr><td>Cisco ASA/FTD<br><span class="muted">CVE-2025-20333/-62 · Sep 25</span></td><td>State campaign with firmware-level persistence; CISA emergency directive; survivors had to re-remediate as persistence evolved.</td></tr>
+        <tr><td>Oracle EBS (Cl0p)<br><span class="muted">CVE-2025-61882 · Aug–Oct 25</span></td><td>MOVEit-pattern mass data-theft via one enterprise platform; 100+ organizations affected per Google's assessment, no encryption used.</td></tr>
+        <tr><td>GoAnywhere MFT<br><span class="muted">CVE-2025-10035 · Sep 25</span></td><td>File-transfer software remains a ransomware magnet (Medusa via Storm-1175).</td></tr>
+        <tr><td>VMware ESXi escapes<br><span class="muted">CVE-2025-22224/5/6</span></td><td>Full VM-escape toolkit found in Chinese-nexus hands; ransomware exploitation confirmed 2026. Hypervisors are now direct targets.</td></tr>
+        <tr><td>Ivanti EPMM 3× zero-days<br><span class="muted">CVE-2026-1281/-1340/-6973</span></td><td>Repeated in-the-wild RCE against MDM in 2026 — the “security software as attack surface” pattern.</td></tr>
+        <tr><td>Fortinet SSO bypass<br><span class="muted">CVE-2026-24858 · Jan 26</span></td><td>Actively exploited auth bypass; second exploited Fortinet flaw followed in April.</td></tr>
+        <tr><td>CitrixBleed 3<br><span class="muted">CVE-2026-8451 · Jun 26</span></td><td>Third memory-overread generation; exploited within ~24–48h of disclosure. Session theft means patching alone is insufficient.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:14px">
+    <div class="card">
+      <h3>Supply chain: sustained attacks on open-source registries</h3>
+      <p class="small">The <strong>Shai-Hulud worm</strong> (Sep + Nov 2025) trojanized ~700 npm packages and created 25,000+ malicious GitHub repos, harvesting cloud and CI/CD credentials at ecosystem scale — the objective has shifted from data theft to <strong>pipeline and cloud credential compromise</strong>. Follow-on worms (TanStack +160 packages) and multi-registry campaigns (npm/PyPI/Docker Hub in 48 hours) continued into 2026. Combined with the Drift OAuth cascade and third-party involvement in ~half of breaches (DBIR), supplier and integration risk is now a top-3 exposure for most organizations.</p>
+    </div>
+    <div class="card">
+      <h3>Structural changes in the vulnerability ecosystem</h3>
+      <p class="small"><strong>NVD is no longer a complete enrichment source</strong> — NIST formally de-prioritized everything outside KEV entries and US-federal-relevant software (Apr 2026); pre-March-2026 backlog moved to “Not Scheduled.” Supplement with KEV, EPSS, CNA scores and vendor data. <strong>CVE program funding is now durable</strong> (protected CISA budget line after the 2025 scare). <strong>ENISA's EUVD</strong> is becoming the EU-relevant layer, and will absorb CRA mandatory exploited-vuln reporting from Sept 2026 — expect EU-specific disclosure volume to rise. Secure-by-design pressure is shifting from US voluntary pledges to <strong>EU law</strong> (CRA, PLD).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SECTION 5: REGULATION ================= -->
+<section id="regulation">
+  <h2><span class="sec-num">5</span>Regulatory timeline (EU / Germany)</h2>
+  <p class="sec-sub">Compliance deadlines are now a primary driver of the security roadmap. Red = urgent, blue = next up, gray = passed. Quarterly deep-dive; dates verified monthly.</p>
+
+  <div class="card">
+    <div class="tl">
+      <div class="tl-year">2025 — in force</div>
+      <div class="tl-item past"><div class="tl-date">17 Jan</div><div class="tl-body"><strong>DORA applies</strong> — financial sector; 2026 = active supervision phase, first 19 critical ICT providers (AWS, Azure, GCP, SAP…) designated Nov 2025 under direct EU oversight.</div></div>
+      <div class="tl-item past"><div class="tl-date">6 Dec</div><div class="tl-body"><strong>NIS2UmsuCG in force</strong> (Germany) — ~29,500 entities in scope; risk-management duties (§30 BSIG) and 24h/72h incident reporting apply <em>immediately, no transition period</em>; management personally liable (§38).</div></div>
+      <div class="tl-year">2026</div>
+      <div class="tl-item past"><div class="tl-date">6 Mar</div><div class="tl-body"><strong>NIS2 statutory registration deadline</strong> (passed) · Bundesrat approved <strong>KRITIS-Dachgesetz</strong> (physical resilience, in force mid-March).</div></div>
+      <div class="tl-item past"><div class="tl-date">29 Jun</div><div class="tl-body"><strong>AI Act omnibus adopted</strong> — Annex III high-risk postponed to Dec 2027, Annex I to Aug 2028.</div></div>
+      <div class="tl-item urgent"><div class="tl-date">31 Jul</div><div class="tl-body"><strong>NIS2 registration — final BSI grace deadline.</strong> Fines up to €500k for non-registration. Also: earliest KRITIS-Dachgesetz registration deadline falls on 17 July.</div></div>
+      <div class="tl-item next"><div class="tl-date">2 Aug</div><div class="tl-body"><strong>AI Act:</strong> Art. 50 transparency obligations apply (governance and penalties chapters have applied since Aug 2025).</div></div>
+      <div class="tl-item next"><div class="tl-date">11 Sep</div><div class="tl-body"><strong>CRA reporting obligations start</strong> — manufacturers must report actively exploited vulns &amp; severe incidents (24h early warning / 72h notification) via ENISA. Applies to products already on the market.</div></div>
+      <div class="tl-item next"><div class="tl-date">9 Dec</div><div class="tl-body"><strong>New Product Liability Directive</strong> transposition deadline — strict liability extends to software, incl. cybersecurity defects and lost data. German implementation still pending.</div></div>
+      <div class="tl-item next"><div class="tl-date">Q4</div><div class="tl-body"><strong>EU PQC roadmap:</strong> member states must have national post-quantum roadmaps and start the transition by end-2026.</div></div>
+      <div class="tl-year">2027–2028</div>
+      <div class="tl-item"><div class="tl-date">2 Dec 27</div><div class="tl-body"><strong>AI Act Annex III high-risk obligations</strong> (biometrics, critical infrastructure, employment…).</div></div>
+      <div class="tl-item"><div class="tl-date">11 Dec 27</div><div class="tl-body"><strong>CRA fully applies</strong> — CE marking requires secure-by-design conformity, SBOM-based vuln handling, defined support periods for every product with digital elements sold in the EU.</div></div>
+      <div class="tl-item"><div class="tl-date">Aug 28</div><div class="tl-body"><strong>AI Act Annex I</strong> (AI in regulated products) · <strong>~Dec 28:</strong> NIS2 Nachweispflicht — besonders wichtige Einrichtungen must evidence compliance (audits/ISO 27001).</div></div>
+      <div class="tl-year">2030–2035</div>
+      <div class="tl-item"><div class="tl-date">2030</div><div class="tl-body"><strong>EU: critical-infrastructure PQC migration complete</strong> · BSI: stop sole reliance on classical crypto for high-protection uses · NIST deprecates classical asymmetric crypto.</div></div>
+      <div class="tl-item"><div class="tl-date">2031</div><div class="tl-body"><strong>BSI TR-02102:</strong> end of classical-only key exchange in general — hybrid (classical+PQC) becomes the floor.</div></div>
+      <div class="tl-item"><div class="tl-date">2035</div><div class="tl-body"><strong>Full PQC transition</strong> (EU “as broad as possible”; NIST disallows classical asymmetric crypto).</div></div>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-top:14px">
+    <div class="card">
+      <h3>Watch: EU cybersecurity package</h3>
+      <p class="small">The Commission's Jan 2026 package (CSA 2.0 + targeted NIS2 amendment) would relieve ~28,700 smaller companies from NIS2 scope, create single-entry incident reporting, a ransomware helpdesk, and an expanded operational role for ENISA (including running the EU Cybersecurity Reserve established by the 2025 Cyber Solidarity Act), and an ICT supply-chain framework against high-risk vendors. Legislative negotiations continue through 2026 — no re-planning is required yet, but scope changes should be tracked.</p>
+    </div>
+    <div class="card">
+      <h3>Watch: DORA enforcement</h3>
+      <p class="small">Supervisors moved from tolerance to active enforcement in 2026: registers of information are cross-checked EU-wide, first TLPT cycles are running, and critical-provider oversight (penalties up to 1% of daily worldwide turnover) is live. No headline fine yet — one is likely within the prediction window (P9).</p>
+    </div>
+    <div class="card">
+      <h3>Watch: Chat Control</h3>
+      <p class="small">The voluntary-scanning derogation expired 3 April 2026; trilogues on the permanent CSA Regulation aimed for political agreement in July 2026. Client-side scanning vs. E2E encryption remains the disputed core — relevant to any org relying on E2E-encrypted messaging. Outcome open as of this edition.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SECTION 6: TECHNOLOGY SHIFTS ================= -->
+<section id="tech">
+  <h2><span class="sec-num">6</span>Technology shifts</h2>
+  <p class="sec-sub">What's real, what's early, and where the market is moving.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>AI in the SOC: maturing capability; plan for augmentation</h3>
+      <p class="small">Every major platform now ships agentic SOC capability (Microsoft Security Copilot agents, CrowdStrike Charlotte AgentWorks, SentinelOne Purple AI agentic investigations — now GA for all customers, Google SecOps agents). Vendor-claimed outcomes are substantial (Microsoft: 75% of phishing/malware investigations automated in internal testing); independent assessments are more conservative: <strong>Gartner places actual AI-SOC adoption at 1–5%</strong>, typical production use is alert enrichment and report drafting with humans retaining decision authority, and stalled pilots are common.</p>
+      <p class="small"><strong>Assessment:</strong> the capability trajectory is credible — Google Big Sleep's SQLite finding pre-empted active exploitation. Establish the data foundation and evaluation criteria now; procure against measured outcomes rather than demonstrations; retain human approval on containment decisions through 2027.</p>
+    </div>
+    <div class="card">
+      <h3>Securing AI: standards emerging for a new attack surface</h3>
+      <p class="small">2025–26 delivered the canonical incidents (EchoLeak zero-click prompt injection; Drift OAuth cascade; GTG-1002) and the first serious guidance wave: <strong>OWASP Agentic Top 10 (2026)</strong>, <strong>NSA's MCP security sheet (Jun 2026)</strong>, NIST's COSAIS control overlays, ISO 42001 as the emerging governance certificate. Every AI agent is a new identity with tool access; prompt injection is unsolved by design. Where copilots and agents are deployed: maintain an inventory, scope permissions as for privileged service accounts, and log tool invocations.</p>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:14px">
+    <div class="card">
+      <h3>Post-quantum: transport layer largely migrated; the remainder is not</h3>
+      <p class="small">Hybrid PQC key exchange (X25519MLKEM768) now covers <strong>~two-thirds of browser traffic</strong> and ~6M Cloudflare domains by default; OpenSSH and Windows ship PQC natively. The hard part — certificates/signatures, PKI, code signing, IPsec, OT/legacy — has barely started. With <strong>BSI's hard deadlines (classical-only key exchange dead after 2031, high-protection uses after 2030)</strong> and harvest-now-decrypt-later as standing rationale, a cryptographic inventory (CBOM) in 2026–27 is the prudent first step.</p>
+    </div>
+    <div class="card">
+      <h3>Identity: the primary control plane — increasingly non-human</h3>
+      <p class="small">Passkeys reached ~5bn in use; 68% of organizations are deploying them for workforce sign-in — but only 28% are fully passwordless, and attackers responded by stealing <strong>sessions instead of passwords</strong> (infostealer → token replay → MFA bypass). Machine identities outnumber humans by estimates ranging from 45:1 to over 100:1 (Palo Alto/CyberArk's 2026 report: 109:1), and AI agents raise the count further — the thesis behind Palo Alto's completed $25B CyberArk acquisition ("secure every identity — human, machine, agentic"). ITDR and non-human identity governance are the fastest-growing control categories. Market backdrop: consolidation accelerating (Google completed its $32B Wiz acquisition in March 2026), security spend growing ~14% to ~$244bn in 2026.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SECTION 7: 1-YEAR OUTLOOK ================= -->
+<section id="outlook-1y">
+  <h2><span class="sec-num">7</span>1-year outlook <span class="chip">to July 2027</span></h2>
+  <p class="sec-sub">Concrete, falsifiable predictions. Each is graded monthly in the scorecard (section 9) to maintain forecast accountability. Confidence: High ≈ suitable as a planning basis · Medium ≈ plan with contingency.</p>
+  <div class="card">
+    <div class="pred"><div class="pred-id">P1</div><div class="pred-body"><div class="p-claim">Edge/perimeter appliances remain the #1 exploited surface; at least 4 new mass-exploited perimeter CVEs (KEV-listed, VPN/firewall/gateway/MFT/hypervisor) by mid-2027.</div><div class="p-why">Every dataset converges here; 2026 H1 already produced Fortinet, Ivanti ×3, Citrix. Planning assumption: appliance compromise is an expected event; maintain forensic-triage capability beyond patching.</div></div><div class="pred-conf"><span class="chip conf-h">High ~90%</span></div></div>
+    <div class="pred"><div class="pred-id">P2</div><div class="pred-body"><div class="p-claim">Ransom payment rate falls below 25%; encryption-less data extortion becomes the majority mode among top-10 groups.</div><div class="p-why">Payment rate 28% and falling; World Leaks/Cl0p/ShinyHunters already encryption-less; leak-site pressure scales better than crypto-lockers.</div></div><div class="pred-conf"><span class="chip">Med-High ~70%</span></div></div>
+    <div class="pred"><div class="pred-id">P3</div><div class="pred-body"><div class="p-claim">BSI moves to enforcement on NIS2: first publicized fines or formal proceedings against unregistered/non-compliant entities by mid-2027.</div><div class="p-why">Grace deadline expires 31 July 2026 with ~11k entities missing; political pressure after a 14-month-late transposition.</div></div><div class="pred-conf"><span class="chip">Medium ~60%</span></div></div>
+    <div class="pred"><div class="pred-id">P4</div><div class="pred-body"><div class="p-claim">CRA reporting (from 11 Sept 2026) measurably raises EU vulnerability-disclosure volume; EUVD becomes an operationally relevant feed for EU security teams.</div><div class="p-why">Mandatory 24h reporting of actively exploited vulns by all manufacturers selling in the EU is a structural disclosure forcing-function.</div></div><div class="pred-conf"><span class="chip conf-h">High ~75%</span></div></div>
+    <div class="pred"><div class="pred-id">P5</div><div class="pred-body"><div class="p-claim">At least 2 further publicly documented AI-orchestrated intrusion campaigns; agentic attack tooling appears in criminal (not just state) hands.</div><div class="p-why">GTG-1002 proved the model; GTIG already tracks AI-written malware in criminal ops; cost curve favors diffusion.</div></div><div class="pred-conf"><span class="chip conf-h">High ~80%</span></div></div>
+    <div class="pred"><div class="pred-id">P6</div><div class="pred-body"><div class="p-claim">A major (DAX-40/Fortune-500-scale) breach is publicly traced to a compromised enterprise AI agent or AI integration (EchoLeak/Drift class).</div><div class="p-why">Agent deployment is outpacing agent security ~17:1 by spend; OAuth-token and prompt-injection paths are proven.</div></div><div class="pred-conf"><span class="chip">Med-High ~70%</span></div></div>
+    <div class="pred"><div class="pred-id">P7</div><div class="pred-body"><div class="p-claim">Vishing/help-desk social engineering keeps growing past 11% of intrusions; a &gt;€1M deepfake-voice fraud case becomes public in DACH.</div><div class="p-why">Playbook is commoditized beyond Scattered Spider; voice cloning is cheap; Swiss multi-million case already occurred.</div></div><div class="pred-conf"><span class="chip conf-h">High ~75%</span></div></div>
+    <div class="pred"><div class="pred-id">P8</div><div class="pred-body"><div class="p-claim">PQC requirements start appearing in German/EU public procurement and supplier questionnaires; hybrid key exchange exceeds 80% of browser traffic.</div><div class="p-why">BSI deadlines + EU roadmap + US EO 14409 align vendor incentives; wire-level migration is nearly free.</div></div><div class="pred-conf"><span class="chip">Medium ~60%</span></div></div>
+    <div class="pred"><div class="pred-id">P9</div><div class="pred-body"><div class="p-claim">First public DORA enforcement action (fine or binding recommendation dispute with a critical ICT provider) in the EU.</div><div class="p-why">Supervision turned active in 2026; registers are cross-checked automatically; ~50% full compliance leaves targets.</div></div><div class="pred-conf"><span class="chip">Medium ~55%</span></div></div>
+    <div class="pred"><div class="pred-id">P10</div><div class="pred-body"><div class="p-claim">Another self-propagating open-source-registry worm at ≥ Shai-Hulud scale (hundreds of packages) hits npm/PyPI.</div><div class="p-why">The worm technique is published and effective; registry defenses improve slower than attacker iteration.</div></div><div class="pred-conf"><span class="chip">Med-High ~65%</span></div></div>
+  </div>
+</section>
+
+<!-- ================= SECTION 8: 3-YEAR OUTLOOK ================= -->
+<section id="outlook-3y">
+  <h2><span class="sec-num">8</span>3-year outlook <span class="chip">to mid-2029 · revised quarterly</span></h2>
+  <p class="sec-sub">Strategic themes, not predictions — the positions that should inform architecture and budget decisions. Deliberately stable: this section changes only when the strategic picture does. Next scheduled revision: October 2026.</p>
+  <div class="grid-2">
+    <div class="card">
+      <h3>T1 · Machine-speed operations</h3>
+      <p class="small">Attack chains already run at 22-second hand-offs and 29-minute breakouts; agentic tooling will push routine intrusion work toward full automation on both sides. By 2029, detection-to-containment SLAs measured in minutes become the operating standard, and the meaningful differentiator between defenders is not budget but <em>automation readiness</em> — clean telemetry, decision playbooks a machine can execute, humans reserved for judgment.</p>
+      <p class="small"><strong>Position:</strong> invest in the SOC data foundation and response automation now, even while AI-SOC products are immature. The binding constraint in 2028 will be data quality, not vendor capability.</p>
+    </div>
+    <div class="card">
+      <h3>T2 · Identity becomes the perimeter — including non-human</h3>
+      <p class="small">Passwordless becomes the workforce default; attackers complete their pivot to sessions, tokens, OAuth grants and machine identities. Every AI agent is a privileged identity; NHI-to-human ratios keep climbing. Expect identity infrastructure to consolidate into platforms (the CyberArk/Palo Alto thesis) and ITDR to fold into standard SOC scope.</p>
+      <p class="small"><strong>Position:</strong> a single identity security program covering humans, workloads and AI agents — inventory, least privilege, credential lifecycle, session binding — will outperform any set of point solutions. Universal phishing-resistant MFA is the 2026 baseline, not the target state.</p>
+    </div>
+    <div class="card">
+      <h3>T3 · Liability shifts to software producers</h3>
+      <p class="small">CRA full application (Dec 2027) plus the new Product Liability Directive make secure-by-design a market-access and liability question in the EU. SBOMs, declared support periods and exploited-vuln reporting become procurement standard; slow vendor patching becomes a contractual and liability matter rather than an internal risk acceptance.</p>
+      <p class="small"><strong>Position:</strong> incorporate CRA-grade requirements into supplier contracts from 2026; where the organization ships products with digital elements, treat CRA conformity as a 2026–27 program rather than a reactive 2027 effort.</p>
+    </div>
+    <div class="card">
+      <h3>T4 · The crypto-agility decade begins</h3>
+      <p class="small">BSI's 2030/2031 deadlines and the EU 2030 critical-infrastructure target make 2027–28 the realistic window for inventory and migration planning — long-lived sensitive data is already exposed to harvest-now-decrypt-later. Signature/PKI migration will be slower and messier than the TLS layer was.</p>
+      <p class="small"><strong>Position:</strong> cryptographic inventory (CBOM) 2026–27, migration plan by 2028, and crypto-agility (algorithm replacement without re-architecture) as a design requirement for all new systems from now on.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3>T5 · Geopolitical sabotage risk as a standing planning assumption</h3>
+    <p class="small">Chinese OT pre-positioning (Volt/Salt Typhoon pattern), Russian sabotage and hacktivism against European infrastructure, and Iranian retaliatory capacity make destructive scenarios — not just data loss — a planning baseline for anyone in or near critical supply chains. The EU response (NIS2 + CER/KRITIS-Dachgesetz, CSA 2.0, Cybersecurity Reserve, sovereignty requirements) will keep raising resilience expectations, and a Taiwan escalation would activate pre-positioned access at scale.</p>
+    <p class="small"><strong>Position:</strong> prioritize resilience over marginal prevention — segmentation, offline-capable operations, tested recovery from destructive attack (incl. hypervisor and backup compromise), and supplier concentration mapping. Monitor sovereignty requirements where dependencies on US hyperscalers exist.</p>
+  </div>
+</section>
+
+<!-- ================= SECTION 10: SCORECARD ================= -->
+<section id="scorecard">
+  <h2><span class="sec-num">9</span>Prediction scorecard</h2>
+  <p class="sec-sub">Every 1-year prediction is graded monthly: <span class="badge good">✓ Hit</span> <span class="badge warn">◐ Partial</span> <span class="badge crit">✗ Miss</span> <span class="badge open">Open</span>. Baseline edition — all predictions logged 8 July 2026, first grading in the August update.</p>
+  <div class="card">
+    <table>
+      <tr><th style="width:44px">ID</th><th>Prediction (short)</th><th style="width:110px">Confidence</th><th style="width:90px">Status</th><th>Evidence log</th></tr>
+      <tr><td>P1</td><td>≥4 new mass-exploited perimeter CVEs</td><td>High</td><td><span class="badge open">Open</span></td><td class="muted">—</td></tr>
+      <tr><td>P2</td><td>Payment rate &lt;25%; extortion majority encryption-less</td><td>Med-High</td><td><span class="badge open">Open</span></td><td class="muted">—</td></tr>
+      <tr><td>P3</td><td>First BSI NIS2 enforcement publicized</td><td>Medium</td><td><span class="badge open">Open</span></td><td class="muted">—</td></tr>
+      <tr><td>P4</td><td>CRA reporting raises EU disclosure volume; EUVD relevant</td><td>High</td><td><span class="badge open">Open</span></td><td class="muted">—</td></tr>
+      <tr><td>P5</td><td>≥2 more documented AI-orchestrated campaigns; criminal agentic tooling</td><td>High</td><td><span class="badge open">Open</span></td><td class="muted">—</td></tr>
+      <tr><td>P6</td><td>Major breach via enterprise AI agent/integration</td><td>Med-High</td><td><span class="badge open">Open</span></td><td class="muted">—</td></tr>
+      <tr><td>P7</td><td>Vishing grows; &gt;€1M deepfake-voice fraud public in DACH</td><td>High</td><td><span class="badge open">Open</span></td><td class="muted">—</td></tr>
+      <tr><td>P8</td><td>PQC in procurement; hybrid KEX &gt;80% of browser traffic</td><td>Medium</td><td><span class="badge open">Open</span></td><td class="muted">—</td></tr>
+      <tr><td>P9</td><td>First public DORA enforcement action</td><td>Medium</td><td><span class="badge open">Open</span></td><td class="muted">—</td></tr>
+      <tr><td>P10</td><td>Another registry worm ≥ Shai-Hulud scale</td><td>Med-High</td><td><span class="badge open">Open</span></td><td class="muted">—</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ================= SECTION 11: CHANGELOG & METHOD ================= -->
+<section id="changelog">
+  <h2><span class="sec-num">10</span>Changelog &amp; method</h2>
+  <div class="grid-2">
+    <div class="card clog">
+      <h3>Changelog</h3>
+      <p><strong>v1.0.1 — 8 July 2026.</strong> Full adversarial fact-check against primary sources (48 claim groups; 47 confirmed). Corrections: 2025 ransomware payments restated as −8% vs. revised 2024 baseline (previously "flat"); Salt Typhoon victim count clarified (200+ US companies); AI Act governance/penalties chapters noted as applicable since Aug 2025; EU Cybersecurity Reserve attributed to the 2025 Cyber Solidarity Act; NHI ratio updated to 109:1 per 2026 report; attacker-claimed data volumes flagged. Editorial revision for corporate style.</p>
+      <p style="margin-top:8px"><strong>v1.0 — 8 July 2026.</strong> Baseline edition. Landscape research window: mid-2025 → 8 July 2026. Ten 1-year predictions logged; five 3-year themes set; outlooks initialized.</p>
+    </div>
+    <div class="card clog">
+      <h3>Method &amp; cadence</h3>
+      <p><strong>Monthly</strong> (early each month): sections 1–6 refreshed, predictions graded, changelog entry added. <strong>Quarterly</strong> (Jan/Apr/Jul/Oct): section 8 (3-year) substantively revised. The fixed section skeleton never changes, so editions stay comparable. Confidence levels are stated to support objective grading; sources are primary wherever possible (BSI, ENISA, CISA, EUR-Lex, vendor threat intel: GTIG/Mandiant, CrowdStrike, Verizon DBIR, Chainalysis, Check Point).</p>
+    </div>
+  </div>
+  <div class="card src-group" style="margin-top:14px">
+    <h3>Key sources for this edition</h3>
+    <div class="src-group"><h4>Government / EU</h4><p>BSI Lagebericht 2025 &amp; TR-02102 PQC guidance (Feb 2026) · ENISA Threat Landscape 2025 &amp; EUVD · CISA (KEV, ED 25-03, BOD 26-04, Akira advisory) · EUR-Lex &amp; EC (NIS2UmsuCG, CRA, DORA, AI Act omnibus, PLD, EU PQC roadmap) · EBA/ESAs (DORA CTPP designations) · NSA MCP security sheet · US EO 14409.</p></div>
+    <div class="src-group"><h4>Industry threat intelligence</h4><p>Google Threat Intelligence Group (M-Trends 2026, zero-day review 2025, AI threat tracker) · CrowdStrike Global Threat Report 2026 · Verizon DBIR 2026 · Chainalysis Crypto Crime 2026 · Check Point ransomware Q1 2026 · Black Kite Europe Ransomware Report (Jun 2026) · VulnCheck State of Exploitation · Bitkom Wirtschaftsschutz 2025 · Wiz/Microsoft/Datadog (Shai-Hulud) · Anthropic (GTG-1002) · FIDO Alliance · Gartner.</p></div>
+    <p class="muted" style="margin-top:10px">Known uncertainties in this edition: Novo Nordisk attribution conflicts across trackers; some vendor-reported figures (AI-SOC outcomes, GTG-1002 autonomy %, NHI ratios) are not independently verified; Chat Control outcome open; CRA harmonized-standards timing keeps slipping. These are flagged inline and rechecked monthly.</p>
+  </div>
+</section>
+
+<footer>
+  Security Strategy Radar v1.0.1 · A monthly strategic briefing on the cybersecurity landscape · Update cadence: monthly (sections 1–6, scorecard), quarterly (3-year outlook) · This document summarizes third-party reporting; verify CVE details against vendor advisories before operational use.
+</footer>
+
+</div>
+</body>
+</html>
